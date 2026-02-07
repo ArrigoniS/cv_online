@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Scientist | Interactive CV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00f3ff;
+            --magenta: #ff00aa;
+            --electric-blue: #0066ff;
+            --deep-purple: #6b00ff;
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --terminal-green: #00ff88;
+            --gradient-1: linear-gradient(135deg, var(--electric-blue), var(--deep-purple));
+            --gradient-2: linear-gradient(135deg, var(--cyan), var(--magenta));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Background animated gradient mesh */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            background: 
+                radial-gradient(circle at 20% 30%, var(--electric-blue) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, var(--magenta) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, var(--deep-purple) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(10%, 5%) scale(1.1); }
+            66% { transform: translate(-5%, 10%) scale(0.9); }
+        }
+
+        /* Terminal Header */
+        .terminal-container {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--terminal-green);
+            box-shadow: 0 4px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .terminal {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--terminal-green);
+            box-shadow: 0 0 10px var(--terminal-green);
+        }
+
+        .dot:nth-child(2) { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+        .dot:nth-child(3) { background: var(--magenta); box-shadow: 0 0 10px var(--magenta); }
+
+        .terminal-content {
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+        }
+
+        .terminal-prompt {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .prompt-symbol {
+            color: var(--cyan);
+            font-weight: bold;
+        }
+
+        .typing-text {
+            overflow: hidden;
+            border-right: 2px solid var(--terminal-green);
+            white-space: nowrap;
+            animation: typing 3s steps(50) 1s forwards, blink 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        .terminal-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .terminal-cmd {
+            background: none;
+            border: 1px solid var(--terminal-green);
+            color: var(--terminal-green);
+            padding: 0.4rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .terminal-cmd:hover {
+            background: var(--terminal-green);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px var(--terminal-green);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-matrix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--cyan);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            animation: fadeInUp 1.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: var(--gradient-1);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+            animation: fadeInUp 1.5s ease 0.3s backwards;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            animation: fadeInUp 1.5s ease 0.5s backwards;
+        }
+
+        .typing-cursor {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: blink-cursor 0.8s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1.5s ease 0.7s backwards;
+        }
+
+        .hero-bio {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+            animation: fadeInUp 1.5s ease 0.9s backwards;
+        }
+
+        .avatar-container {
+            margin-bottom: 2rem;
+            animation: fadeInUp 1.5s ease 0.2s backwards;
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .avatar svg {
+            width: 130px;
+            height: 130px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--cyan);
+            border-radius: 25px;
+            position: relative;
+        }
+
+        .scroll-indicator span::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--cyan);
+            border-radius: 50%;
+            animation: scroll 1.5s infinite;
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; top: 8px; }
+            100% { opacity: 0; top: 30px; }
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 5rem 2rem;
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Education Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--gradient-1);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            padding-left: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -56px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--gradient-2);
+            border: 3px solid var(--bg-dark);
+            box-shadow: 0 0 20px var(--cyan);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px var(--cyan); }
+            50% { box-shadow: 0 0 30px var(--cyan), 0 0 40px var(--magenta); }
+        }
+
+        .timeline-date {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .timeline-location {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Skills Cloud */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .skill-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--cyan);
+            box-shadow: 0 10px 40px rgba(0, 243, 255, 0.3);
+        }
+
+        .skill-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .skill-card.active {
+            border-color: var(--magenta);
+            box-shadow: 0 10px 40px rgba(255, 0, 170, 0.4);
+        }
+
+        .skill-projects {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 243, 255, 0.2);
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .skill-card.active .skill-projects {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .skill-projects-title {
+            font-size: 0.85rem;
+            color: var(--terminal-green);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.75rem;
+        }
+
+        .skill-project-item {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding: 0.5rem 0;
+            border-left: 2px solid var(--cyan);
+            padding-left: 0.75rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .skill-project-item:hover {
+            color: var(--text-primary);
+            border-left-color: var(--magenta);
+            padding-left: 1rem;
+        }
+
+        .skill-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .skill-level {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .skill-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            background: var(--gradient-2);
+            border-radius: 10px;
+            transition: width 1s ease;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        .skill-tools {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Projects */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            border-color: var(--magenta);
+            box-shadow: 0 20px 60px rgba(255, 0, 170, 0.3);
+        }
+
+        .project-header {
+            padding: 2rem;
+            background: var(--gradient-1);
+            position: relative;
+        }
+
+        .project-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-tech {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .project-body {
+            padding: 2rem;
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Fun Facts */
+        .fun-facts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .fun-fact-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .fun-fact-card:hover {
+            transform: translateX(10px);
+            border-color: var(--cyan);
+            box-shadow: 0 5px 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .fun-fact-icon {
+            font-size: 2.5rem;
+            flex-shrink: 0;
+            animation: bounce-icon 2s ease-in-out infinite;
+        }
+
+        .fun-fact-card:nth-child(1) .fun-fact-icon {
+            animation-delay: 0s;
+        }
+
+        .fun-fact-card:nth-child(2) .fun-fact-icon {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes bounce-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .fun-fact-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Experience */
+        .experience-list {
+            margin-top: 3rem;
+        }
+
+        .experience-card {
+            background: var(--bg-card);
+            border-left: 4px solid var(--gradient-1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.4s ease;
+        }
+
+        .experience-card:hover {
+            transform: translateX(10px);
+            box-shadow: -10px 10px 40px rgba(0, 243, 255, 0.2);
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .experience-title {
+            flex: 1;
+        }
+
+        .experience-role {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .experience-company {
+            font-size: 1.2rem;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .experience-date {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .experience-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .achievements {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .achievement {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .achievement-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .achievement-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: var(--bg-card);
+            border-top: 2px solid var(--terminal-green);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .easter-egg {
+            margin-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terminal-green);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .terminal {
+                padding: 1rem;
+            }
+
+            .terminal-nav {
+                gap: 0.5rem;
+            }
+
+            .terminal-cmd {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.75rem;
+            }
+
+            .hero {
+                min-height: 80vh;
+            }
+
+            .section {
+                padding: 3rem 1rem;
+            }
+
+            .timeline {
+                padding-left: 30px;
+            }
+
+            .timeline-item {
+                padding-left: 20px;
+            }
+
+            .timeline-item::before {
+                left: -42px;
+            }
+
+            .projects-grid,
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .experience-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Terminal Header -->
+    <div class="terminal-container">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            <div class="terminal-content">
+                <div class="terminal-prompt">
+                    <span class="prompt-symbol">></span>
+                    <span class="typing-text">Initializing data_scientist.profile... ✓ Ready!</span>
+                </div>
+                <div id="terminal-output"></div>
+                <nav class="terminal-nav">
+                    <button class="terminal-cmd" onclick="scrollToSection('education')">education.list()</button>
+                    <button class="terminal-cmd" onclick="scrollToSection('skills')">skills.show()</button>
+                    <button class="terminal-cmd" onclick="scrollToSection('projects')">projects.explore()</button>
+                    <button class="terminal-cmd" onclick="scrollToSection('experience')">experience.timeline()</button>
+                    <button class="terminal-cmd" onclick="showEasterEgg('coffee')">coffee.status()</button>
+                    <button class="terminal-cmd" onclick="showEasterEgg('basketball')">basketball.stats()</button>
+                    <button class="terminal-cmd" onclick="showEasterEgg('physics')">physics.joke()</button>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="data-matrix" id="dataMatrix"></div>
+        <div class="hero-content">
+            <div class="avatar-container">
+                <div class="avatar">
+                    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Computer monitor background -->
+                        <rect x="20" y="95" width="120" height="55" fill="#1a1a2e" stroke="#00f3ff" stroke-width="2"/>
+                        <rect x="24" y="99" width="112" height="47" fill="#0a0a0f"/>
+                        
+                        <!-- Code on screen (green text) - more detailed -->
+                        <rect x="28" y="103" width="16" height="2" fill="#00ff88"/>
+                        <rect x="48" y="103" width="12" height="2" fill="#00ff88"/>
+                        <rect x="28" y="108" width="24" height="2" fill="#00ff88"/>
+                        <rect x="56" y="108" width="20" height="2" fill="#00ff88"/>
+                        <rect x="28" y="113" width="12" height="2" fill="#00ff88"/>
+                        <rect x="44" y="113" width="28" height="2" fill="#00ff88"/>
+                        <rect x="28" y="118" width="32" height="2" fill="#00ff88"/>
+                        <rect x="28" y="123" width="16" height="2" fill="#00ff88"/>
+                        <rect x="48" y="123" width="24" height="2" fill="#00ff88"/>
+                        <rect x="28" y="128" width="20" height="2" fill="#00ff88"/>
+                        <rect x="52" y="128" width="16" height="2" fill="#00ff88"/>
+                        <rect x="28" y="133" width="28" height="2" fill="#00ff88"/>
+                        <rect x="60" y="133" width="12" height="2" fill="#00ff88"/>
+                        
+                        <!-- Cursor blinking -->
+                        <rect x="76" y="108" width="2" height="2" fill="#00ff88">
+                            <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Hacker character - more refined pixels -->
+                        <!-- Head base -->
+                        <rect x="62" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="66" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="70" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="74" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="78" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="82" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="86" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="90" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="94" y="32" width="4" height="4" fill="#ffd4a3"/>
+                        
+                        <!-- Face area -->
+                        <rect x="62" y="36" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="66" y="36" width="28" height="4" fill="#ffd4a3"/>
+                        <rect x="94" y="36" width="4" height="4" fill="#ffd4a3"/>
+                        
+                        <rect x="62" y="40" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="66" y="40" width="28" height="4" fill="#ffd4a3"/>
+                        <rect x="94" y="40" width="4" height="4" fill="#ffd4a3"/>
+                        
+                        <rect x="62" y="44" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="66" y="44" width="28" height="4" fill="#ffd4a3"/>
+                        <rect x="94" y="44" width="4" height="4" fill="#ffd4a3"/>
+                        
+                        <rect x="62" y="48" width="4" height="4" fill="#ffd4a3"/>
+                        <rect x="66" y="48" width="28" height="4" fill="#ffd4a3"/>
+                        <rect x="94" y="48" width="4" height="4" fill="#ffd4a3"/>
+                        
+                        <!-- Hair (blonde) - more detail -->
+                        <rect x="58" y="24" width="4" height="4" fill="#f4d03f"/>
+                        <rect x="62" y="24" width="36" height="4" fill="#f4d03f"/>
+                        <rect x="98" y="24" width="4" height="4" fill="#f4d03f"/>
+                        <rect x="58" y="28" width="4" height="4" fill="#f4d03f"/>
+                        <rect x="62" y="28" width="36" height="4" fill="#f4d03f"/>
+                        <rect x="98" y="28" width="4" height="4" fill="#f4d03f"/>
+                        <rect x="58" y="32" width="4" height="4" fill="#f4d03f"/>
+                        <rect x="98" y="32" width="4" height="4" fill="#f4d03f"/>
+                        <rect x="58" y="36" width="4" height="8" fill="#f4d03f"/>
+                        <rect x="98" y="36" width="4" height="8" fill="#f4d03f"/>
+                        
+                        
+                        <!-- Eyes -->
+                        <rect x="70" y="40" width="3" height="3" fill="#000"/>
+                        <rect x="86" y="40" width="3" height="3" fill="#000"/>
+
+                        <rect x="70" y="41.5" width="1.5" height="2" fill="#00FFFF"/>
+                        <rect x="86" y="41.5" width="1.5" height="2" fill="#00FFFF"/>
+
+                        <rect x="73" y="40" width="1" height="4" fill="#FFFFFF"/>
+                        <rect x="89" y="40" width="1" height="4" fill="#FFFFFF"/>
+
+                        <rect x="69" y="39" width="1" height="5" fill="#FFFFFF"/>
+                        <rect x="85" y="39" width="1" height="5" fill="#FFFFFF"/>
+
+                        <rect x="70" y="43" width="4" height="1" fill="#FFFFFF"/>
+                        <rect x="86" y="43" width="4" height="1" fill="#FFFFFF"/>
+
+                        <rect x="70" y="39" width="4" height="1" fill="#FFFFFF"/>
+                        <rect x="86" y="39" width="4" height="1" fill="#FFFFFF"/>
+
+                        
+                        
+                        <!-- Hoodie - more detailed -->
+                        <rect x="54" y="52" width="52" height="4" fill="#0066ff"/>
+                        <rect x="50" y="56" width="60" height="4" fill="#0066ff"/>
+                        <rect x="46" y="60" width="68" height="4" fill="#0066ff"/>
+                        <rect x="46" y="64" width="68" height="8" fill="#0066ff"/>
+                        <rect x="46" y="72" width="68" height="8" fill="#0066ff"/>
+                        
+                        <!-- Hood shadows -->
+                        <rect x="58" y="28" width="4" height="24" fill="#004499" opacity="0.5"/>
+                        <rect x="98" y="28" width="4" height="24" fill="#004499" opacity="0.5"/>
+                        
+                        <!-- Hands typing -->
+                        <rect x="38" y="76" width="8" height="4" fill="#ffd4a3"/>
+                        <rect x="38" y="80" width="12" height="4" fill="#ffd4a3"/>
+                        <rect x="110" y="76" width="8" height="4" fill="#ffd4a3"/>
+                        <rect x="106" y="80" width="12" height="4" fill="#ffd4a3"/>
+                        
+                        <!-- Keyboard - detailed -->
+                        <rect x="32" y="84" width="96" height="8" fill="#2c3e50"/>
+                        <rect x="36" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="41" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="46" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="51" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="56" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="61" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="66" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="71" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="76" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="81" y="86" width="3" height="2" fill="#555"/>
+                        <rect x="86" y="86" width="3" height="2" fill="#555"/>
+                        
+                        <!-- Glow effects -->
+                        <circle cx="80" cy="50" r="58" fill="none" stroke="url(#glowGradient)" stroke-width="2" opacity="0.3">
+                            <animate attributeName="r" values="58;63;58" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.3;0.5;0.3" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <defs>
+                            <radialGradient id="glowGradient">
+                                <stop offset="0%" style="stop-color:#00f3ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#ff00aa;stop-opacity:0" />
+                            </radialGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+            <div class="hero-tag">Data has no borders 🌍</div>
+            <h1><span id="typingTitle"></span><span class="typing-cursor">|</span></h1>
+            <p class="hero-subtitle">Transforming Raw Data into Actionable Insights</p>
+            <p class="hero-bio">
+                Physics graduate who fell in love with data and never looked back. 
+                Using data and statistics to make the world better through sustainability, 
+                equality, and evidence-based decision making.
+            </p>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <!-- Fun Facts Section -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">> about.me()</span>
+                <h2 class="section-title">Fun Facts</h2>
+                <p class="section-subtitle">A bit more about my journey</p>
+            </div>
+            <div class="fun-facts">
+                <div class="fun-fact-card">
+                    <div class="fun-fact-icon">🏀</div>
+                    <div class="fun-fact-text">Former basketball coach turned data wizard</div>
+                </div>
+                <div class="fun-fact-card">
+                    <div class="fun-fact-icon">⚛️</div>
+                    <div class="fun-fact-text">From physics formulas to Python functions</div>
+                </div>
+                <div class="fun-fact-card">
+                    <div class="fun-fact-icon">📚🌏</div>
+                    <div class="fun-fact-text">Book lover & travel enthusiast | From Asian temples to Python libraries</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="section" id="education">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">> step_1: data_collection</span>
+                <h2 class="section-title">Education</h2>
+                <p class="section-subtitle">The foundation of knowledge and continuous learning</p>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">July 2025 - July 2026</div>
+                    <h3 class="timeline-title">Master in Data Science</h3>
+                    <p class="timeline-location">ProfessionAI (Equivalent to Bachelor's degree)</p>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6;">
+                        Comprehensive, hands-on Data Science program. Programming: Python, R, SQL. 
+                        Technologies: TensorFlow, Scikit-learn, Spark, AWS, Databricks. 11 real-world projects.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">June 2025</div>
+                    <h3 class="timeline-title">Google Advanced Analytics Certificate</h3>
+                    <p class="timeline-location">Google</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">September 2019 - February 2025</div>
+                    <h3 class="timeline-title">Bachelor's Degree in Physics</h3>
+                    <p class="timeline-location">University of Insubria, Como</p>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6;">
+                        <strong>Thesis:</strong> "Totally Asymmetric Simple Exclusion Process: a model for the translation of mRNA" 
+                        - Data Science theoretical study of mRNA translational motion in protein synthesis using Python simulation and analysis.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2014 - 2019</div>
+                    <h3 class="timeline-title">Scientific High School Diploma</h3>
+                    <p class="timeline-location">Liceo Scientifico G. Ferraris, Varese</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="section" id="skills">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">> step_2: data_cleaning</span>
+                <h2 class="section-title">Technical Skills</h2>
+                <p class="section-subtitle">Tools and technologies I master to transform data into insights</p>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-card" onclick="toggleSkillProjects(this)">
+                    <div class="skill-icon">🐍</div>
+                    <h3 class="skill-name">Python</h3>
+                    <div class="skill-level">Daily Use | Advanced</div>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" style="width: 95%"></div>
+                    </div>
+                    <div class="skill-tools">pandas • numpy • sklearn • matplotlib • xgboost</div>
+                    <div class="skill-projects">
+                        <div class="skill-projects-title">Related Projects:</div>
+                        <div class="skill-project-item">🤖 Supply Chain Performance Predictor</div>
+                        <div class="skill-project-item">💰 Inventory & Cash Management System</div>
+                    </div>
+                </div>
+                <div class="skill-card" onclick="toggleSkillProjects(this)">
+                    <div class="skill-icon">📊</div>
+                    <h3 class="skill-name">R</h3>
+                    <div class="skill-level">Regular Use | Advanced</div>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" style="width: 85%"></div>
+                    </div>
+                    <div class="skill-tools">ggplot • Statistical Analysis • Regression Modelling</div>
+                    <div class="skill-projects">
+                        <div class="skill-projects-title">Related Projects:</div>
+                        <div class="skill-project-item">🏠 Texas Housing Market Analysis</div>
+                    </div>
+                </div>
+                <div class="skill-card" onclick="toggleSkillProjects(this)">
+                    <div class="skill-icon">🗃️</div>
+                    <h3 class="skill-name">SQL</h3>
+                    <div class="skill-level">Weekly Use | Intermediate</div>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" style="width: 80%"></div>
+                    </div>
+                    <div class="skill-tools">JOIN • GROUP BY • CASE • Complex Queries</div>
+                    <div class="skill-projects">
+                        <div class="skill-projects-title">Related Projects:</div>
+                        <div class="skill-project-item">🌍 Urban Pollution Analysis 2021</div>
+                    </div>
+                </div>
+                <div class="skill-card" onclick="toggleSkillProjects(this)">
+                    <div class="skill-icon">📈</div>
+                    <h3 class="skill-name">Tableau</h3>
+                    <div class="skill-level">Regular Use | Intermediate</div>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" style="width: 80%"></div>
+                    </div>
+                    <div class="skill-tools">Interactive Dashboards • Data Visualization</div>
+                    <div class="skill-projects">
+                        <div class="skill-projects-title">Related Projects:</div>
+                        <div class="skill-project-item">😊 Salary-Happiness Correlation Study</div>
+                    </div>
+                </div>
+                <div class="skill-card" onclick="toggleSkillProjects(this)">
+                    <div class="skill-icon">💼</div>
+                    <h3 class="skill-name">Power BI</h3>
+                    <div class="skill-level">Occasional Use | Intermediate</div>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" style="width: 75%"></div>
+                    </div>
+                    <div class="skill-tools">Business Intelligence • Reporting</div>
+                    <div class="skill-projects">
+                        <div class="skill-projects-title">Related Projects:</div>
+                        <div class="skill-project-item">🏀 Serie C Basketball Analytics Dashboard</div>
+                    </div>
+                </div>
+                <div class="skill-card" onclick="toggleSkillProjects(this)">
+                    <div class="skill-icon">📑</div>
+                    <h3 class="skill-name">Excel</h3>
+                    <div class="skill-level">Regular Use | Advanced</div>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" style="width: 90%"></div>
+                    </div>
+                    <div class="skill-tools">Pivot Tables • Pivot Charts • Data Analysis</div>
+                    <div class="skill-projects">
+                        <div class="skill-projects-title">Related Projects:</div>
+                        <div class="skill-project-item">💰 Investment Strategy Simulator</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="section" id="projects">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">> step_3: exploratory_analysis</span>
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-subtitle">Real-world applications of data science and analytics</p>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🤖</div>
+                        <h3 class="project-title">Supply Chain Performance Predictor</h3>
+                        <p class="project-tech">Python • Machine Learning</p>
+                    </div>
+                    <div class="project-body">
+                        <p class="project-description">
+                            Developed a predictive machine learning model to forecast supplier performance in the supply chain, 
+                            enabling proactive decision-making and risk mitigation.
+                        </p>
+                        <div class="project-tags">
+                            <span class="tag">sklearn</span>
+                            <span class="tag">pandas</span>
+                            <span class="tag">predictive-analytics</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🏠</div>
+                        <h3 class="project-title">Texas Housing Market Analysis</h3>
+                        <p class="project-tech">R • Statistical Analysis</p>
+                    </div>
+                    <div class="project-body">
+                        <p class="project-description">
+                            Comprehensive descriptive statistical analysis of the Texas real estate market, 
+                            identifying trends, patterns, and key market indicators using advanced R techniques.
+                        </p>
+                        <div class="project-tags">
+                            <span class="tag">ggplot2</span>
+                            <span class="tag">statistics</span>
+                            <span class="tag">visualization</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">💰</div>
+                        <h3 class="project-title">Inventory & Cash Management System</h3>
+                        <p class="project-tech">Python • Terminal Interface</p>
+                    </div>
+                    <div class="project-body">
+                        <p class="project-description">
+                            Built a complete inventory and cash management system for retail operations, 
+                            controlled via Python terminal with input commands for tracking stock, sales, and transactions.
+                        </p>
+                        <div class="project-tags">
+                            <span class="tag">python</span>
+                            <span class="tag">CLI</span>
+                            <span class="tag">inventory</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🌍</div>
+                        <h3 class="project-title">Urban Pollution Analysis 2021</h3>
+                        <p class="project-tech">MySQL • Data Analysis</p>
+                    </div>
+                    <div class="project-body">
+                        <p class="project-description">
+                            Analyzed pollution data across multiple cities using MySQL, 
+                            uncovering environmental trends and contributing to sustainability insights.
+                        </p>
+                        <div class="project-tags">
+                            <span class="tag">SQL</span>
+                            <span class="tag">environment</span>
+                            <span class="tag">sustainability</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">😊</div>
+                        <h3 class="project-title">Salary-Happiness Correlation Study</h3>
+                        <p class="project-tech">Tableau • Data Visualization</p>
+                    </div>
+                    <div class="project-body">
+                        <p class="project-description">
+                            Created an interactive Tableau visualization exploring the relationship between income levels 
+                            and self-reported happiness scores, revealing surprising insights about well-being.
+                        </p>
+                        <div class="project-tags">
+                            <span class="tag">tableau</span>
+                            <span class="tag">correlation</span>
+                            <span class="tag">social-data</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">💰</div>
+                        <h3 class="project-title">Investment Strategy Simulator</h3>
+                        <p class="project-tech">Excel • Monte Carlo Simulation</p>
+                    </div>
+                    <div class="project-body">
+                        <p class="project-description">
+                            Simulation comparing investment strategies: generated 100 Gaussian distributions matching S&P500 historical data (20 years), 
+                            traditional life insurance, and bank savings. Analyzes optimal choice based on investment timeline and monthly contributions.
+                        </p>
+                        <div class="project-tags">
+                            <span class="tag">excel</span>
+                            <span class="tag">monte-carlo</span>
+                            <span class="tag">finance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🏀</div>
+                        <h3 class="project-title">Serie C Basketball Analytics Dashboard</h3>
+                        <p class="project-tech">Power BI • Sports Analytics</p>
+                    </div>
+                    <div class="project-body">
+                        <p class="project-description">
+                            Statistical analysis dashboard for Lombardy Serie C basketball championship, with interactive visualizations.
+                        </p>
+                        <div class="project-tags">
+                            <span class="tag">power-bi</span>
+                            <span class="tag">sports</span>
+                            <span class="tag">visualization</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section class="section" id="experience">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">> step_4: predictive_modeling</span>
+                <h2 class="section-title">Professional Experience</h2>
+                <p class="section-subtitle">Applying data science to solve real business challenges</p>
+            </div>
+            <div class="experience-list">
+                <div class="experience-card">
+                    <div class="experience-header">
+                        <div class="experience-title">
+                            <h3 class="experience-role">Data Analyst - Supply Chain</h3>
+                            <p class="experience-company">Aero Alliance</p>
+                        </div>
+                        <div class="experience-date">July 2025 - Present</div>
+                    </div>
+                    <p class="experience-description">
+                        Leading data analytics initiatives for supply chain optimization, 
+                        developing predictive models and automation solutions to enhance operational efficiency.
+                    </p>
+                    <div class="achievements">
+                        <div class="achievement">
+                            <span class="achievement-icon">📊</span>
+                            <p class="achievement-text">Analyzed supplier performance metrics to identify bottlenecks and improvement opportunities</p>
+                        </div>
+                        <div class="achievement">
+                            <span class="achievement-icon">⚙️</span>
+                            <p class="achievement-text">Developed automated software to optimize warehouse slotting, increasing supply chain efficiency</p>
+                        </div>
+                        <div class="achievement">
+                            <span class="achievement-icon">🤖</span>
+                            <p class="achievement-text">Built machine learning model to predict supplier performance, enabling proactive decision-making</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-header">
+                        <div class="experience-title">
+                            <h3 class="experience-role">Test Analyst, Consultant</h3>
+                            <p class="experience-company">Alten Italia</p>
+                        </div>
+                        <div class="experience-date">March 2024 - March 2025</div>
+                    </div>
+                    <p class="experience-description">
+                        Consulted on critical digital payment projects worth millions of dollars, 
+                        ensuring quality assurance and testing for high-stakes business operations.
+                    </p>
+                    <div class="achievements">
+                        <div class="achievement">
+                            <span class="achievement-icon">💳</span>
+                            <p class="achievement-text">Worked on mission-critical digital payment systems handling millions in transactions</p>
+                        </div>
+                        <div class="achievement">
+                            <span class="achievement-icon">✅</span>
+                            <p class="achievement-text">Implemented rigorous testing protocols to ensure system reliability and security</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-header">
+                        <div class="experience-title">
+                            <h3 class="experience-role">Basketball Coach</h3>
+                            <p class="experience-company">Various Teams</p>
+                        </div>
+                        <div class="experience-date">September 2016 - February 2024</div>
+                    </div>
+                    <p class="experience-description">
+                        Trained young talents and professional athletes, applying data-driven approaches to performance optimization.
+                    </p>
+                    <div class="achievements">
+                        <div class="achievement">
+                            <span class="achievement-icon">🏆</span>
+                            <p class="achievement-text">Won Serie C Championship, demonstrating strategic leadership and team development</p>
+                        </div>
+                        <div class="achievement">
+                            <span class="achievement-icon">🌟</span>
+                            <p class="achievement-text">Coached national-level athletes, contributing to their professional development</p>
+                        </div>
+                        <div class="achievement">
+                            <span class="achievement-icon">📈</span>
+                            <p class="achievement-text">Applied analytical thinking to training programs and game strategy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h2 class="footer-title">Ready to Transform Data Together?</h2>
+            <p class="footer-subtitle">> Contact details available in attached CV</p>
+            <p class="footer-note">
+                This interactive CV was built to showcase technical skills, creativity, and passion for data science.
+                All projects and experiences are real and verifiable.
+            </p>
+            <div class="easter-egg">
+                > Try typing "coffee.status()", "basketball.stats()" or "physics.joke()" in the terminal above 😉
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Typing effect for hero title
+        const titleText = "Data Scientist";
+        let charIndex = 0;
+        const typingSpeed = 100;
+
+        function typeTitle() {
+            if (charIndex < titleText.length) {
+                document.getElementById('typingTitle').textContent += titleText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeTitle, typingSpeed);
+            }
+        }
+
+        // Start typing after page loads
+        window.addEventListener('load', () => {
+            setTimeout(typeTitle, 1500);
+        });
+
+        // Toggle skill projects
+        function toggleSkillProjects(card) {
+            const wasActive = card.classList.contains('active');
+            
+            // Close all skill cards
+            document.querySelectorAll('.skill-card').forEach(c => {
+                c.classList.remove('active');
+            });
+            
+            // Toggle current card
+            if (!wasActive) {
+                card.classList.add('active');
+            }
+        }
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Smooth scroll to sections
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const terminalHeight = document.querySelector('.terminal-container').offsetHeight;
+            const sectionTop = section.offsetTop - terminalHeight - 20;
+            
+            window.scrollTo({
+                top: sectionTop,
+                behavior: 'smooth'
+            });
+
+            // Update terminal output
+            const output = document.getElementById('terminal-output');
+            output.innerHTML = `<div style="margin-bottom: 0.5rem; color: var(--cyan);">> Navigating to ${sectionId}... ✓</div>`;
+            
+            setTimeout(() => {
+                output.innerHTML = '';
+            }, 2000);
+        }
+
+        // Easter eggs
+        function showEasterEgg(type) {
+            const output = document.getElementById('terminal-output');
+            const messages = {
+                coffee: '☕ Running on espresso and curiosity',
+                basketball: '🏀 Won Serie C Championship | Team Work > Data > Opinions',
+                physics: '⚛️ Why can\'t you trust atoms? They make up everything! (Just like some datasets)'
+            };
+
+            output.innerHTML = `<div style="margin-bottom: 0.5rem; color: var(--terminal-green);">> ${messages[type]}</div>`;
+            
+            setTimeout(() => {
+                output.innerHTML = '';
+            }, 4000);
+        }
+
+        // Data matrix background animation
+        function createDataMatrix() {
+            const matrix = document.getElementById('dataMatrix');
+            const chars = '01データ統計分析ABCDEF';
+            let matrixContent = '';
+            
+            for (let i = 0; i < 100; i++) {
+                const randomChars = Array.from({length: 50}, () => 
+                    chars[Math.floor(Math.random() * chars.length)]
+                ).join('');
+                matrixContent += `<div style="position: absolute; top: ${Math.random() * 100}%; left: ${Math.random() * 100}%; animation: fadeInOut ${3 + Math.random() * 4}s infinite;">${randomChars}</div>`;
+            }
+            
+            matrix.innerHTML = matrixContent;
+        }
+
+        // Add fade animation for matrix
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; }
+                50% { opacity: 0.3; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        createDataMatrix();
+
+        // Animate skill bars on scroll
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fills = entry.target.querySelectorAll('.skill-bar-fill');
+                    fills.forEach(fill => {
+                        fill.style.width = fill.style.width; // Trigger animation
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const skillsSection = document.getElementById('skills');
+        if (skillsSection) {
+            skillObserver.observe(skillsSection);
+        }
+    </script>
+</body>
+</html>
